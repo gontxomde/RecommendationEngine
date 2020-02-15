@@ -32,17 +32,19 @@ TMDB_TO_IMDB_SIMPLE_EQUIVALENCIES = {
 
 IMDB_COLUMNS_TO_REMAP = {'imdb_score': 'vote_average'}
 
+
 def load_tmdb_movies(path):
-    """
-    Función utilizada para cargar el dataset de las películas. Se transforma a fecha el campo de fecha de salida
+    """Función utilizada para cargar el dataset de las películas. Se transforma a fecha el campo de fecha de salida
     y se cargan como listas los campos que están guardados como json.
-
+    
     Args:
-        path: Ruta hasta el archivo de tmdb_5000_movies.csv
-
+        path (str): Ruta hasta el archivo de tmdb_5000_movies.csv
+    
     Returns:
-        Dataframe de pandas con la información del csv
+        pd.DataFrame: Dataframe de pandas con la información del csv
     """
+
+
     df = pd.read_csv(path)
     df['release_date'] = pd.to_datetime(df['release_date']).apply(lambda x: x.date())
     json_columns = ['genres', 'keywords', 'production_countries', 'production_companies', 'spoken_languages']
@@ -50,17 +52,17 @@ def load_tmdb_movies(path):
         df[column] = df[column].apply(json.loads)
     return df
 
-
 def load_tmdb_credits(path):
-    """
-    Función utilizada para cargar el dataset de los créditos. Se cargan como listas los campos que están guardado
-
+    """Función utilizada para cargar el dataset de los créditos. Se cargan como listas los campos que están guardado
+    
     Args:
-        path: Ruta hasta el archivo de tmdb_5000_credits.csv
+        path (str): Ruta hasta el archivo de tmdb_5000_credits.csv
 
+    
     Returns:
-        Dataframe de pandas con la información del csv
+        pd.DataFrame: [description]
     """
+
     df = pd.read_csv(path)
     json_columns = ['cast', 'crew']
     for column in json_columns:
@@ -68,17 +70,17 @@ def load_tmdb_credits(path):
     return df
 
 def safe_access(container, index_values):
-    """
-    Función para acceder de forma segura a valores. En caso de que no se encuentre uno de ellos, se devuelve NaN
+    """Función para acceder de forma segura a valores. En caso de que no se encuentre uno de ellos, se devuelve NaN
     en vez de lanzar un error.
-
+    
     Args:
-        container: Lista/ contenedor de la que quieren extraerse los valores
-        index_values: Lista de índices a extraer del contenedor
-
+        container ([type]): Lista/ contenedor de la que quieren extraerse los valores
+        index_values ([type]): Lista de índices a extraer del contenedor
+    
     Returns:
-        
+        any: Valores extraidos
     """
+
     result = container
     try:
         for idx in index_values:
@@ -87,43 +89,42 @@ def safe_access(container, index_values):
     except (IndexError, KeyError):
         return pd.np.nan
 
-
 def get_director(crew_data):
     """Devuelve el director dado un json con toda la composición del equipo de la película.
     
-    Arguments:
-        crew_data -- JSON con el equipo que ha realizado la película
+    Args:
+        crew_data (json): JSON con el equipo que ha realizado la película
     
     Returns:
-        str -- director de la película
+        str: Director de la película
     """
+
     directors = [x['name'] for x in crew_data if x['job'] == 'Director']
     return safe_access(directors, [0])
-
 
 def pipe_flatten_names(keywords):
     """Obtiene una lista con las keywords separadas por un pipe | extrayéndolas del json.
     
-    Arguments:
-        keywords -- JSON de keywords de la película
+    Args:
+        keywords (json): keywords de la película
     
     Returns:
-        str -- keywords de la película juntas
+        str: keywords de la película juntas
     """
     return '|'.join([x['name'] for x in keywords])
-
 
 def convert_to_original_format(movies, credits):
     """Aplica una serie de funciones para añadir información al dataset de películas a partir del
     conjunto de datos de créditos
     
-    Arguments:
-        movies -- DataFrame obtenido de leer el archivo de películas
-        credits -- DataFrame obtenido de leet el archivo de créditos
+    Args:
+        movies (pd.DataFrame): DataFrame obtenido de leer el archivo de películas
+        credits (pd.DataFrame): DataFrame obtenido de leet el archivo de créditos
     
     Returns:
-        DataFrame -- Datos obtenidos de cruzar ambos conjuntos de datos.
+        pd.DataFrame: DataFrame con la información conjunta
     """
+
     tmdb_movies = movies.copy()
     tmdb_movies.rename(columns=TMDB_TO_IMDB_SIMPLE_EQUIVALENCIES, inplace=True)
     tmdb_movies['title_year'] = pd.to_datetime(tmdb_movies['release_date']).apply(lambda x: x.year)
@@ -141,12 +142,11 @@ def convert_to_original_format(movies, credits):
 def get_synonyms(keyword):
     """Se obtienen los sinónimos sustantivos de una palabra
     
-    Arguments:
-        keyword -- Palabra de la que obtener los sinónimos
-
-
+    Args:
+        keyword (str): Palabra de la que obtener los sinónimos
+    
     Returns:
-        lemma -- Lista con los sinónimos
+        list: Lista con los sinónimos
     """
 
     lemma = set()
@@ -162,16 +162,14 @@ def keywords_inventory(dataframe, column = 'plot_keywords'):
     """Devuelve un diccionario con las palabras que derivan de cada lexema
     a partir de un DataFrame y la columna de la que se quiere extraer
     
-    Arguments:
-        dataframe -- DataFrame del que obtener la información
-    
-    Keyword Arguments:
-        column -- Nombre de la columna (default: {'plot_keywords'})
+    Args:
+        dataframe (pd.DataFrame): DataFrame del que obtener la información.
+        column (str, optional): Nombre de la columna. Defaults to 'plot_keywords'.
     
     Returns:
-        Lista con las keywords finales que aparecen
-        Diccionario con la relación lexema <-> palabras
-        Diccionario con la palabra más corta derivada del lexema
+        list: Keywords finales que aparecen
+        dict: Relación lexema <-> palabras
+        dict: Palabra más corta derivada del lexema
     """
     PS = nltk.stem.PorterStemmer()
     keywords_roots  = dict()  # recoger las palabras de cada lexema

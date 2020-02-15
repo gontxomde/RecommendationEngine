@@ -45,8 +45,8 @@ class Imputer():
     def fill_year(self):
         """Completa la columna faltante del año teniendo en cuenta la media
         de los periodos de actividad de los actores y el director.
-    
         """
+
         col = ['director_name', 'actor_1_name', 'actor_2_name', 'actor_3_name']
         usual_year = [0 for _ in range(4)]
         var        = [0 for _ in range(4)]
@@ -88,16 +88,17 @@ class Imputer():
 
     def variable_linreg_imputation(self, df, col_to_predict, ref_col):
         """Completa los valores de la variable col_to_predict haciendo una regresión
-        lineal en la que la variable predictora es ref_col
+        lineal en la que la variable predictora es ref_col.
         
-        Arguments:
-            df -- DataFrame de películas
-            col_to_predict -- Variable a predecir
-            ref_col -- Variable con la que predecir
+        Args:
+            df (pd.DataFrame): DataFrame de películas
+            col_to_predict (str): Variable a predecir
+            ref_col (str): Variable con la que predecir
         
         Returns:
-            df -- DataFrame de películas completado
+            pd.DataFrame: DataFrame de películas completado
         """
+
         regr = linear_model.LinearRegression()
         test = df[[col_to_predict,ref_col]].dropna(how='any', axis = 0)
         X = np.array(test[ref_col])

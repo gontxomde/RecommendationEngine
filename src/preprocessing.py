@@ -83,18 +83,18 @@ class Preprocesser():
 
         return self.df
 
-
     def count_word(self, df, ref_col, lista):
         """Toma una columna de un dataframe y un set de valores y devuelve un diccionario y una lista
         con el numero de apariciones de cada elemento de la lista en la columna del dataframe
         
-        Arguments:
-            df -- DataFrame del que extraer la información
-            ref_col -- Columna de la que extraer los valores diferentes
-            lista -- Lista con los diferentes valores de los que extraer sus apariciones
-        
+        Args:
+            df (pd.DataFrame]): DataFrame del que extraer la información
+            ref_col (str): Columna de la que extraer los valores diferentes
+            lista (list): Lista con los diferentes valores de los que extraer sus apariciones
         Returns:
-            lista y diccionario con el número de apariciones
+            list: Número de apariciones
+            dict: Número de apariciones
+            
         """
         keyword_count = dict()
         for s in lista: keyword_count[s] = 0
@@ -114,18 +114,17 @@ class Preprocesser():
     def df_keywords_replacement(self, df, replacement_dict, roots = False, column = 'plot_keywords'):
         """Reemplaza las palabras clave de una película por las formas básicas de las mismas.
         
-        Arguments:
-            df -- DataFrame que contiene la información de las películas
-            replacement_dict -- diccionarion]
-        
-        Keyword Arguments:
-            roots {bool} -- Controla si se obtienen las raices de las palabras de las
-            keywords (default: {False})
-            column -- Columna en la que realizar la transformación
+        Args:
+            df (pd.DataFrame): DataFrame que contiene la información de las películas
+            replacement_dict (dict): Diccionario con los cambios
+            roots (bool, optional): Controla si se obtienen las raices de las palabras de las
+            keywords. Defaults to False.
+            column (str, optional): Columna en la que realizar la transformación. Defaults to 'plot_keywords'.
         
         Returns:
-            df_new -- DataFrame con las sustituciones realizadas
+            pd.DataFrame: DataFrame con las sustituciones realizadas
         """
+
         PS = nltk.stem.PorterStemmer()
         df_new = df.copy(deep = True)
         for index, row in df_new.iterrows():
@@ -144,25 +143,25 @@ class Preprocesser():
     def test_keyword(self,word, key_count, threshold):
         """Devuelve si una palabra aparece un número mayor de veces que el umbral señalado
         
-        Arguments:
-            word -- Palabra a busvcar
-            key_count -- Diccionario con las apariciones de cada keyword
-            threshold -- Umbral
+        Args:
+            word (str): Palabra a buscar
+            key_count (dict): Diccionario con las apariciones de cada keyword
+            threshold (int): Umbral
         
         Returns:
-            bool -- True si aparece un número mayor de veces
+            bool: True si aparece un número mayor de veces
         """
         return (False , True)[key_count.get(word, 0) >= threshold]
 
     def replacement_df_low_frequency_keywords(self, df, keyword_occurences):
         """Modifica las entradas del dataframe, quitando las keywords que aparecen menos de 3 veces.
         
-        Arguments:
-            df -- DataFrame de películas
-            keyword_occurences -- Diccionario que contiene la ocurrencia de cada keyword
+        Args:
+            df (pd.DataFrame): DataFrame de películas
+            keyword_occurences ([type]): Diccionario que contiene la ocurrencia de cada keyword
         
         Returns:
-            df -- DataFrame con las nuevas keywords
+            pd.Dataframe: DataFrame con las nuevas keywords
         """
         df_new = df.copy(deep = True)
         key_count = dict()
