@@ -1,7 +1,11 @@
 from preprocessing import Preprocesser
 from imputation import Imputer
+import os
 
-PP = Preprocesser(movies_path = "./datos/tmdb_5000_movies.csv", credits_path= "./datos/tmdb_5000_credits.csv")
+MOVIESPATH = "/home/gonzalo/tfmunir/RecommendationEngine/RecommendationEngine/datos/tmdb_5000_movies.csv"
+CREDITSPATH = "/home/gonzalo/tfmunir/RecommendationEngine/RecommendationEngine/datos/tmdb_5000_credits.csv"
+
+PP = Preprocesser(movies_path = MOVIESPATH, credits_path= CREDITSPATH)
 df = PP.preprocess()
 
 IM = Imputer(df)

@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>preprocessing module &#8212; documentación de Sistema de recomendación - UNIR - 0.1</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-preprocessing">
+<span id="preprocessing-module"></span><h1>preprocessing module<a class="headerlink" href="#module-preprocessing" title="Enlazar permanentemente con este título">¶</a></h1>
+<dl class="class">
+<dt id="preprocessing.Preprocesser">
+<em class="property">class </em><code class="sig-prename descclassname">preprocessing.</code><code class="sig-name descname">Preprocesser</code><span class="sig-paren">(</span><em class="sig-param">movies_path</em>, <em class="sig-param">credits_path</em><span class="sig-paren">)</span><a class="headerlink" href="#preprocessing.Preprocesser" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="preprocessing.Preprocesser.count_word">
+<code class="sig-name descname">count_word</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">ref_col</em>, <em class="sig-param">lista</em><span class="sig-paren">)</span><a class="headerlink" href="#preprocessing.Preprocesser.count_word" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Toma una columna de un dataframe y un set de valores y devuelve un diccionario y una lista
+con el numero de apariciones de cada elemento de la lista en la columna del dataframe</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em><em>]</em>) – DataFrame del que extraer la información</p></li>
+<li><p><strong>ref_col</strong> (<em>str</em>) – Columna de la que extraer los valores diferentes</p></li>
+<li><p><strong>lista</strong> (<em>list</em>) – Lista con los diferentes valores de los que extraer sus apariciones</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>Número de apariciones
+dict: Número de apariciones</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="preprocessing.Preprocesser.df_keywords_replacement">
+<code class="sig-name descname">df_keywords_replacement</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">replacement_dict</em>, <em class="sig-param">roots=False</em>, <em class="sig-param">column='plot_keywords'</em><span class="sig-paren">)</span><a class="headerlink" href="#preprocessing.Preprocesser.df_keywords_replacement" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Reemplaza las palabras clave de una película por las formas básicas de las mismas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – DataFrame que contiene la información de las películas</p></li>
+<li><p><strong>replacement_dict</strong> (<em>dict</em>) – Diccionario con los cambios</p></li>
+<li><p><strong>roots</strong> (<em>bool</em><em>, </em><em>optional</em>) – Controla si se obtienen las raices de las palabras de las</p></li>
+<li><p><strong>Defaults to False.</strong> (<em>keywords.</em>) – </p></li>
+<li><p><strong>column</strong> (<em>str</em><em>, </em><em>optional</em>) – Columna en la que realizar la transformación. Defaults to “plot_keywords”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>DataFrame con las sustituciones realizadas</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="preprocessing.Preprocesser.preprocess">
+<code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#preprocessing.Preprocesser.preprocess" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="preprocessing.Preprocesser.replacement_df_low_frequency_keywords">
+<code class="sig-name descname">replacement_df_low_frequency_keywords</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">keyword_occurences</em><span class="sig-paren">)</span><a class="headerlink" href="#preprocessing.Preprocesser.replacement_df_low_frequency_keywords" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Modifica las entradas del dataframe, quitando las keywords que aparecen menos de 3 veces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – DataFrame de películas</p></li>
+<li><p><strong>keyword_occurences</strong> (<em>[</em><em>type</em><em>]</em>) – Diccionario que contiene la ocurrencia de cada keyword</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>DataFrame con las nuevas keywords</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>pd.Dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="preprocessing.Preprocesser.test_keyword">
+<code class="sig-name descname">test_keyword</code><span class="sig-paren">(</span><em class="sig-param">word</em>, <em class="sig-param">key_count</em>, <em class="sig-param">threshold</em><span class="sig-paren">)</span><a class="headerlink" href="#preprocessing.Preprocesser.test_keyword" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Devuelve si una palabra aparece un número mayor de veces que el umbral señalado</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>word</strong> (<em>str</em>) – Palabra a buscar</p></li>
+<li><p><strong>key_count</strong> (<em>dict</em>) – Diccionario con las apariciones de cada keyword</p></li>
+<li><p><strong>threshold</strong> (<em>int</em>) – Umbral</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>True si aparece un número mayor de veces</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Sistema de recomendación - UNIR</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navegación</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Gonzalo Izaguirre de Diego.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/preprocessing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -11,7 +11,7 @@ from common import convert_to_original_format
 from common import keywords_inventory
 from common import get_synonyms
 
-class preprocessing():
+class Preprocesser():
     def __init__(self,movies_path, credits_path):
 
         credit = load_tmdb_credits(credits_path)

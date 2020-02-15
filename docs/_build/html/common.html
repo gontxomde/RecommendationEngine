@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>common module &#8212; documentación de Sistema de recomendación - UNIR - 0.1</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-common">
+<span id="common-module"></span><h1>common module<a class="headerlink" href="#module-common" title="Enlazar permanentemente con este título">¶</a></h1>
+<dl class="function">
+<dt id="common.convert_to_original_format">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">convert_to_original_format</code><span class="sig-paren">(</span><em class="sig-param">movies</em>, <em class="sig-param">credits</em><span class="sig-paren">)</span><a class="headerlink" href="#common.convert_to_original_format" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Aplica una serie de funciones para añadir información al dataset de películas a partir del
+conjunto de datos de créditos</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>movies</strong> (<em>pd.DataFrame</em>) – DataFrame obtenido de leer el archivo de películas</p></li>
+<li><p><strong>credits</strong> (<em>pd.DataFrame</em>) – DataFrame obtenido de leet el archivo de créditos</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>DataFrame con la información conjunta</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.get_director">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">get_director</code><span class="sig-paren">(</span><em class="sig-param">crew_data</em><span class="sig-paren">)</span><a class="headerlink" href="#common.get_director" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Devuelve el director dado un json con toda la composición del equipo de la película.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><p><strong>crew_data</strong> (<em>json</em>) – JSON con el equipo que ha realizado la película</p>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>Director de la película</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.get_synonyms">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">get_synonyms</code><span class="sig-paren">(</span><em class="sig-param">keyword</em><span class="sig-paren">)</span><a class="headerlink" href="#common.get_synonyms" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Se obtienen los sinónimos sustantivos de una palabra</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><p><strong>keyword</strong> (<em>str</em>) – Palabra de la que obtener los sinónimos</p>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>Lista con los sinónimos</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.keywords_inventory">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">keywords_inventory</code><span class="sig-paren">(</span><em class="sig-param">dataframe</em>, <em class="sig-param">column='plot_keywords'</em><span class="sig-paren">)</span><a class="headerlink" href="#common.keywords_inventory" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Devuelve un diccionario con las palabras que derivan de cada lexema
+a partir de un DataFrame y la columna de la que se quiere extraer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataframe</strong> (<em>pd.DataFrame</em>) – DataFrame del que obtener la información.</p></li>
+<li><p><strong>column</strong> (<em>str</em><em>, </em><em>optional</em>) – Nombre de la columna. Defaults to “plot_keywords”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>Keywords finales que aparecen
+dict: Relación lexema &lt;-&gt; palabras
+dict: Palabra más corta derivada del lexema</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.load_tmdb_credits">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">load_tmdb_credits</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#common.load_tmdb_credits" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función utilizada para cargar el dataset de los créditos. Se cargan como listas los campos que están guardado</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Ruta hasta el archivo de tmdb_5000_credits.csv</p>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.load_tmdb_movies">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">load_tmdb_movies</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#common.load_tmdb_movies" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función utilizada para cargar el dataset de las películas. Se transforma a fecha el campo de fecha de salida
+y se cargan como listas los campos que están guardados como json.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Ruta hasta el archivo de tmdb_5000_movies.csv</p>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>Dataframe de pandas con la información del csv</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.pipe_flatten_names">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">pipe_flatten_names</code><span class="sig-paren">(</span><em class="sig-param">keywords</em><span class="sig-paren">)</span><a class="headerlink" href="#common.pipe_flatten_names" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Obtiene una lista con las keywords separadas por un pipe | extrayéndolas del json.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><p><strong>keywords</strong> (<em>json</em>) – keywords de la película</p>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>keywords de la película juntas</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.safe_access">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">safe_access</code><span class="sig-paren">(</span><em class="sig-param">container</em>, <em class="sig-param">index_values</em><span class="sig-paren">)</span><a class="headerlink" href="#common.safe_access" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función para acceder de forma segura a valores. En caso de que no se encuentre uno de ellos, se devuelve NaN
+en vez de lanzar un error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>container</strong> (<em>[</em><em>type</em><em>]</em>) – Lista/ contenedor de la que quieren extraerse los valores</p></li>
+<li><p><strong>index_values</strong> (<em>[</em><em>type</em><em>]</em>) – Lista de índices a extraer del contenedor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve</dt>
+<dd class="field-even"><p>Valores extraidos</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto</dt>
+<dd class="field-odd"><p>any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Sistema de recomendación - UNIR</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navegación</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Gonzalo Izaguirre de Diego.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/common.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
