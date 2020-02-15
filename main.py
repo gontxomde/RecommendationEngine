@@ -1,10 +1,10 @@
 from preprocessing import Preprocesser
-from cleaning import Cleaner
+from imputation import Imputer
 
 PP = Preprocesser(movies_path = "./datos/tmdb_5000_movies.csv", credits_path= "./datos/tmdb_5000_credits.csv")
 df = PP.preprocess()
 
-CL = Cleaner(df)
+IM = Imputer(df)
 
-df = CL.clean_df()
+df = IM.impute()
 print(df.head(5))
