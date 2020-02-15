@@ -1,5 +1,7 @@
 import pandas as pd
 import json
+from nltk.corpus import wordnet
+import nltk
 
 LOST_COLUMNS = [
     'actor_1_facebook_likes',
@@ -135,3 +137,67 @@ def convert_to_original_format(movies, credits):
     tmdb_movies['genres'] = tmdb_movies['genres'].apply(pipe_flatten_names)
     tmdb_movies['plot_keywords'] = tmdb_movies['plot_keywords'].apply(pipe_flatten_names)
     return tmdb_movies
+
+def get_synonyms(keyword):
+    """Se obtienen los sinónimos sustantivos de una palabra
+    
+    Arguments:
+        keyword -- Palabra de la que obtener los sinónimos
+
+
+    Returns:
+        lemma -- Lista con los sinónimos
+    """
+
+    lemma = set()
+    for ss in wordnet.synsets(keyword):
+        for w in ss.lemma_names():
+            #_______________________________
+            #  Obtenemos los sinónimos que son sustantivos
+            index = ss.name().find('.')+1
+            if ss.name()[index] == 'n': lemma.add(w.lower().replace('_',' '))
+    return lemma
+
+def keywords_inventory(dataframe, column = 'plot_keywords'):
+    """Devuelve un diccionario con las palabras que derivan de cada lexema
+    a partir de un DataFrame y la columna de la que se quiere extraer
+    
+    Arguments:
+        dataframe -- DataFrame del que obtener la información
+    
+    Keyword Arguments:
+        column -- Nombre de la columna (default: {'plot_keywords'})
+    
+    Returns:
+        Lista con las keywords finales que aparecen
+        Diccionario con la relación lexema <-> palabras
+        Diccionario con la palabra más corta derivada del lexema
+    """
+    PS = nltk.stem.PorterStemmer()
+    keywords_roots  = dict()  # recoger las palabras de cada lexema
+    keywords_select = dict()  # asociacion: lexema <-> keyword
+    category_keys = []
+    for s in dataframe[column]:
+        if pd.isnull(s): continue
+        for t in s.split('|'):
+            t = t.lower() ; root = PS.stem(t)
+            # Para cada lexema, un set con las palabras que lo usan
+            if root in keywords_roots:                
+                keywords_roots[root].add(t)
+            else:
+                keywords_roots[root] = {t}
+    
+    for s in keywords_roots.keys():
+        if len(keywords_roots[s]) > 1:  
+            min_length = 1000
+            for k in keywords_roots[s]:
+                if len(k) < min_length:
+                    key = k ; min_length = len(k)            
+            category_keys.append(key)
+            keywords_select[s] = key
+        else:
+            category_keys.append(list(keywords_roots[s])[0])
+            keywords_select[s] = list(keywords_roots[s])[0]
+                
+    #print("Número de keywords en la variable: '{}': {}".format(column,len(category_keys)))
+    return category_keys, keywords_roots, keywords_select
