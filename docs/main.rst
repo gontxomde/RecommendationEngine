@@ -10,6 +10,21 @@ Welcome to Recommendation Engine - UNIR's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+RecommendationEngine main
+===================
+.. automodule:: main
+   :members:
+
+RecommendationEngine preprocess
+=====================
+.. automodule:: preprocessing
+   :members:
+
+TeacherAPI imputation
+=================
+.. automodule:: imputation
+   :members:
+
 
 
 Indices and tables

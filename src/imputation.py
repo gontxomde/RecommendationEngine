@@ -45,7 +45,6 @@ class Imputer():
     def fill_year(self):
         """Completa la columna faltante del año teniendo en cuenta la media
         de los periodos de actividad de los actores y el director.
-    
         """
         col = ['director_name', 'actor_1_name', 'actor_2_name', 'actor_3_name']
         usual_year = [0 for _ in range(4)]
