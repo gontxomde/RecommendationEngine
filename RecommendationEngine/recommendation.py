@@ -2,17 +2,18 @@ import pandas as pd
 import numpy as np
 import math, nltk, warnings
 import yaml
+import sys
+import os
 from nltk.corpus import wordnet
 from sklearn import linear_model
 from sklearn.neighbors import NearestNeighbors
 from fuzzywuzzy import fuzz
 from wordcloud import WordCloud, STOPWORDS
-from preprocessing import Preprocesser
-from imputation import Imputer
+from RecommendationEngine.preprocessing import Preprocessor
+from RecommendationEngine.imputation import Imputer
 
 class Recommendator ():
-    def __init__(self, conf_file = "conf_partial.yml"):
-        
+    def __init__(self, conf_file = "conf_partial.yml", df_pickle = None):
         with open(conf_file) as f:
             
             config = yaml.load(f)
@@ -20,19 +21,22 @@ class Recommendator ():
         try:
             complete_execution = config['complete_execution']
         except:
+            
             print("Exception")
             complete_execution = False
 
         if complete_execution:
-            PP = Preprocesser(movies_path = config['movies'], credits_path= config['credits'])
+            print("completa")
+            PP = Preprocessor(movies_path = config['movies'], credits_path= config['credits'])
             self.df = PP.preprocess()
 
             IM = Imputer(self.df)
 
             self.df = IM.impute()
+            
             self.df.to_pickle("dfPickle.pkl")
         else:
-            self.df = pd.read_pickle("dfPickle.pkl")
+            self.df = pd.read_pickle(df_pickle)
         self.gaussian_filter = lambda x,y,sigma: math.exp(-(x-y)**2/(2*sigma**2))
 
 
@@ -68,9 +72,9 @@ class Recommendator ():
         return col_labels
 
     def add_variables(self, df, REF_VAR):
-        """Añade al dataframe de películas las columnas dadas en REF_VAR (que serán el director, etc de una
-        película) y las inicializa a 0 o 1 dependiendo de si la película es del mismo director, tiene a ese actor
-        , etc
+        """Añade al dataframe de películas las columnas dadas en REF_VAR (que serán el 
+        director, etc de unapelícula) y las inicializa a 0 o 1 dependiendo de si la 
+        película es del mismo director, tiene a ese actor, etc
         
         Args:
             df (pd.DataFrame): DataFrame de películas
@@ -126,8 +130,9 @@ class Recommendator ():
         return indices[0][:]
 
     def extract_parameters(self,df, list_films, N = 31):
-        """Extrae algunas variables del dataframe dado como entrada y devuelve la lista de N películas.
-        Esta lista se ordena de acuerdo al criterio de la función selection_criteria.
+        """Extrae algunas variables del dataframe dado como entrada y devuelve la lista
+        de N películas. Esta lista se ordena de acuerdo al criterio de la función 
+        selection_criteria.
         
         Args:
             df ([type]): DataFrame de películas
@@ -178,11 +183,12 @@ class Recommendator ():
             return False
 
     def selection_criteria(self, title_main, max_users, ref_year, title, year, score, votes):
-        """Calcula la puntuación de una película como recomendación de otra en base a la similaridad
-        de su título, la distancia temporal entre ambos lanzamientos y el número de votos de la película evaluada
-        y la puntuación de la película en IMDB.
-        Además, la similitud entre títulos se tiene en cuenta para evitar la recomendación de secuelas. Es decir, 
-        si dos películas tienen un nombre muy similar, se desechara como recomendación.
+        """Calcula la puntuación de una película como recomendación de otra en base 
+        a la similaridad de su título, la distancia temporal entre ambos lanzamientos
+        y el número de votos de la película evaluaday la puntuación de la película.
+        Además, la similitud entre títulos se tiene en cuenta para evitar la 
+        recomendación de secuelas. Es decir, si dos películas tienen un nombre muy 
+        similar, se desechara como recomendación.
         
         Args:
             title_main (str): Título de la película dada por el usuario
@@ -217,9 +223,9 @@ class Recommendator ():
         return mark
 
     def add_to_selection(self, film_selection, parameters_films, N = 31, M = 5):
-        """Completa la lista film_selection que contiene 5 películas que se recomendarán al usuario. Las películas
-        son seleccionadas de parameters_list y sólo se tienen en cuenta si el título es suficientemente
-        distinto del de otras películas.
+        """Completa la lista film_selection que contiene 5 películas que se recomendarán
+        al usuario. Las películas son seleccionadas de parameters_list y sólo se tienen
+        en cuenta si el título es suficientemente distinto del de otras películas.
         
         Args:
             film_selection (list): Lista de películas

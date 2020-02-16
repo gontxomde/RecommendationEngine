@@ -3,22 +3,6 @@ import json
 from nltk.corpus import wordnet
 import nltk
 
-LOST_COLUMNS = [
-    'actor_1_facebook_likes',
-    'actor_2_facebook_likes',
-    'actor_3_facebook_likes',
-    'aspect_ratio',
-    'cast_total_facebook_likes',
-    'color',
-    'content_rating',
-    'director_facebook_likes',
-    'facenumber_in_poster',
-    'movie_facebook_likes',
-    'movie_imdb_link',
-    'num_critic_for_reviews',
-    'num_user_for_reviews'
-                ]
-
 TMDB_TO_IMDB_SIMPLE_EQUIVALENCIES = {
     'budget': 'budget',
     'genres': 'genres',
@@ -43,7 +27,6 @@ def load_tmdb_movies(path):
     Returns:
         pd.DataFrame: Dataframe de pandas con la información del csv
     """
-
 
     df = pd.read_csv(path)
     df['release_date'] = pd.to_datetime(df['release_date']).apply(lambda x: x.date())

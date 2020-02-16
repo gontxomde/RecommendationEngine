@@ -5,13 +5,13 @@ import math, nltk, warnings
 from nltk.corpus import wordnet
 from fuzzywuzzy import fuzz
 
-from common import load_tmdb_credits
-from common import load_tmdb_movies
-from common import convert_to_original_format
-from common import keywords_inventory
-from common import get_synonyms
+from RecommendationEngine.common import load_tmdb_credits
+from RecommendationEngine.common import load_tmdb_movies
+from RecommendationEngine.common import convert_to_original_format
+from RecommendationEngine.common import keywords_inventory
+from RecommendationEngine.common import get_synonyms
 
-class Preprocesser():
+class Preprocessor():
     def __init__(self,movies_path, credits_path):
 
         credit = load_tmdb_credits(credits_path)
@@ -154,7 +154,8 @@ class Preprocesser():
         return (False , True)[key_count.get(word, 0) >= threshold]
 
     def replacement_df_low_frequency_keywords(self, df, keyword_occurences):
-        """Modifica las entradas del dataframe, quitando las keywords que aparecen menos de 3 veces.
+        """Modifica las entradas del dataframe, quitando las keywords que aparecen menos 
+        de 3 veces.
         
         Args:
             df (pd.DataFrame): DataFrame de películas
