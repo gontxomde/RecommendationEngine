@@ -1,19 +1,43 @@
 import pandas as pd
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import seaborn as sns
 import math, nltk, warnings
+import yaml
 from nltk.corpus import wordnet
 from sklearn import linear_model
 from sklearn.neighbors import NearestNeighbors
 from fuzzywuzzy import fuzz
 from wordcloud import WordCloud, STOPWORDS
+from preprocessing import Preprocesser
+from imputation import Imputer
 
 class Recommendator ():
-    def __init__(self, df):
-        self.df = df.copy(deep = True)
+    def __init__(self, conf_file = "conf_partial.yml"):
+        
+        with open(conf_file) as f:
+            
+            config = yaml.load(f)
+            #print(config)
+        try:
+            complete_execution = config['complete_execution']
+        except:
+            print("Exception")
+            complete_execution = False
+
+        if complete_execution:
+            PP = Preprocesser(movies_path = config['movies'], credits_path= config['credits'])
+            self.df = PP.preprocess()
+
+            IM = Imputer(self.df)
+
+            self.df = IM.impute()
+            self.df.to_pickle("dfPickle.pkl")
+        else:
+            self.df = pd.read_pickle("dfPickle.pkl")
         self.gaussian_filter = lambda x,y,sigma: math.exp(-(x-y)**2/(2*sigma**2))
+
+
+
+        
     
     def entry_variables(self, df, id_entry): 
         """Calcula los valores tomados por las variables director_name, actor_[1,2,3]_name y plot_keywords para la
@@ -284,20 +308,69 @@ class Recommendator ():
     
     @staticmethod
     def fuzzing(series_element, string):
-        return fuzz.token_set_ratio(series_element, string)
+        """Dadas dos cadenas de texto calcula la similaridad entre ambas. Se usa para cuando el usuario
+        da como entrada una cadena de textopoder buscar la película a la que se refiere.
+        
+        Args:
+            series_element (str): Cadena de texto 1
+            string (str): Cadena de texto 2
+        
+        Returns:
+            int: Similaridad entre las cadenas de texto
+        """
+        try:
+            mark = 2/(1/fuzz.token_set_ratio(series_element, string) + 1/fuzz.ratio(series_element, string))
+            return mark if mark > 60 else 0
+        except:
+            return 0
+        
 
     def string_to_id(self, df, string):
+        """Dada una cadena de texto se obtiene el id de la película que más se parece. Para ello se compara
+        la cadena de texto con los títulos de las películas.
+
+        
+        Args:
+            df (pd.DataFrame): DataFrame de películas
+            string (str): Cadena de texto dada por el usuario.
+        
+        Returns:
+            int: Id de la película encontrada.
+        """
         df_2 = df.copy(deep = True)
         df_2["mark"] = df_2["movie_title"].apply(self.fuzzing , args = (string,))
         df_2.sort_values(by = ["mark", "title_year"], ascending = [False, True], inplace = True)
-        return df_2.index.values[0]
+        #print("Parecido de la película introducida: ", df_2.iloc[0,-1])
+        return df_2.index.values[0] if df_2.iloc[0,-1] > 60 else None
     
     def predict_from_string(self, string):
+        """Dada una cadena de texto obtiene las películas recomendadas. Para ello busca primero el id
+        y luego usa la función de find_similarities con el id encontrado.
+        
+        Args:
+            string ([type]): [description]
+        """
         df = self.df.copy(deep = True)
         id_entry = self.string_to_id(df, string)
+        if id_entry is not None:
+            selection_titles = self.find_similarities(df, id_entry, del_sequels = True, N = 31, M = 5)
 
-        selection_titles = self.find_similarities(df, id_entry, del_sequels = True, N = 31, M = 5)
+            print("Para la película", df.loc[id_entry, "movie_title"], "te recomendamos ver:")
+            for element in selection_titles:
+                print("\t -", element[0])
+        else:
+            print("No hemos podido encontrar la película introducida 😢.")
+    def user_recommendation(self, string = None):
+        """Será la función que se usará para que el usuario obtenga recomendaciones.
+        
+        Args:
+            string (str): String dada por el usuario
+        
+        Returns:
+            list: Lista de películas recomendadas al usuario
+        """
 
-        print("Para la película", df.loc[id_entry, "movie_title"], "te recomendamos ver:")
-        for element in selection_titles:
-            print("\t -", element[0])
+        if string is None:
+            string = input("Introduce el título de la película: ")
+
+        return self.predict_from_string(string)
