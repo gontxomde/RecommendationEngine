@@ -1,0 +1,3 @@
+complete_execution: True
+movies: "/home/gonzalo/tfmunir/RecommendationEngine/RecommendationEngine/datos/tmdb_5000_movies.csv"
+credits: "/home/gonzalo/tfmunir/RecommendationEngine/RecommendationEngine/datos/tmdb_5000_credits.csv"
