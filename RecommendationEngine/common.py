@@ -17,7 +17,7 @@ TMDB_TO_IMDB_SIMPLE_EQUIVALENCIES = {
 IMDB_COLUMNS_TO_REMAP = {'imdb_score': 'vote_average'}
 
 
-def load_tmdb_movies(path):
+def load_movies(path):
     """Función utilizada para cargar el dataset de las películas. Se transforma a fecha el campo de fecha de salida
     y se cargan como listas los campos que están guardados como json.
     
@@ -35,7 +35,7 @@ def load_tmdb_movies(path):
         df[column] = df[column].apply(json.loads)
     return df
 
-def load_tmdb_credits(path):
+def load_credits(path):
     """Función utilizada para cargar el dataset de los créditos. Se cargan como listas los campos que están guardado
     
     Args:
@@ -52,7 +52,7 @@ def load_tmdb_credits(path):
         df[column] = df[column].apply(json.loads)
     return df
 
-def safe_access(container, index_values):
+def get_element(container, index_values):
     """Función para acceder de forma segura a valores. En caso de que no se encuentre uno de ellos, se devuelve NaN
     en vez de lanzar un error.
     
@@ -83,7 +83,7 @@ def get_director(crew_data):
     """
 
     directors = [x['name'] for x in crew_data if x['job'] == 'Director']
-    return safe_access(directors, [0])
+    return get_element(directors, [0])
 
 def pipe_flatten_names(keywords):
     """Obtiene una lista con las keywords separadas por un pipe | extrayéndolas del json.
@@ -96,7 +96,7 @@ def pipe_flatten_names(keywords):
     """
     return '|'.join([x['name'] for x in keywords])
 
-def convert_to_original_format(movies, credits):
+def combine_collections(movies, credits):
     """Aplica una serie de funciones para añadir información al dataset de películas a partir del
     conjunto de datos de créditos
     
@@ -112,12 +112,12 @@ def convert_to_original_format(movies, credits):
     tmdb_movies.rename(columns=TMDB_TO_IMDB_SIMPLE_EQUIVALENCIES, inplace=True)
     tmdb_movies['title_year'] = pd.to_datetime(tmdb_movies['release_date']).apply(lambda x: x.year)
     # I'm assuming that the first production country is equivalent, but have not been able to validate this
-    tmdb_movies['country'] = tmdb_movies['production_countries'].apply(lambda x: safe_access(x, [0, 'name']))
-    tmdb_movies['language'] = tmdb_movies['spoken_languages'].apply(lambda x: safe_access(x, [0, 'name']))
+    tmdb_movies['country'] = tmdb_movies['production_countries'].apply(lambda x: get_element(x, [0, 'name']))
+    tmdb_movies['language'] = tmdb_movies['spoken_languages'].apply(lambda x: get_element(x, [0, 'name']))
     tmdb_movies['director_name'] = credits['crew'].apply(get_director)
-    tmdb_movies['actor_1_name'] = credits['cast'].apply(lambda x: safe_access(x, [1, 'name']))
-    tmdb_movies['actor_2_name'] = credits['cast'].apply(lambda x: safe_access(x, [2, 'name']))
-    tmdb_movies['actor_3_name'] = credits['cast'].apply(lambda x: safe_access(x, [3, 'name']))
+    tmdb_movies['actor_1_name'] = credits['cast'].apply(lambda x: get_element(x, [1, 'name']))
+    tmdb_movies['actor_2_name'] = credits['cast'].apply(lambda x: get_element(x, [2, 'name']))
+    tmdb_movies['actor_3_name'] = credits['cast'].apply(lambda x: get_element(x, [3, 'name']))
     tmdb_movies['genres'] = tmdb_movies['genres'].apply(pipe_flatten_names)
     tmdb_movies['plot_keywords'] = tmdb_movies['plot_keywords'].apply(pipe_flatten_names)
     return tmdb_movies

@@ -36,7 +36,7 @@ class Imputer():
                 self.df.at[index, 'plot_keywords'] = '|'.join(new_keyword)
 
         # Complete gross with num_voted_users
-        self.df = self.variable_linreg_imputation(self.df, 'gross', 'num_voted_users')
+        self.df = self.variable_regression_imputation(self.df, 'gross', 'num_voted_users')
         self.df.reset_index(inplace = True, drop = True)
 
         
@@ -86,7 +86,7 @@ class Imputer():
                 icount_replaced += 1
                 self.df.at[index, 'title_year'] = int(sum_year)
 
-    def variable_linreg_imputation(self, df, col_to_predict, ref_col):
+    def variable_regression_imputation(self, df, col_to_predict, ref_col):
         """Completa los valores de la variable col_to_predict haciendo una regresión
         lineal en la que la variable predictora es ref_col.
         

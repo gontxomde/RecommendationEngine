@@ -34,8 +34,8 @@
   <div class="section" id="module-common">
 <span id="common-module"></span><h1>common module<a class="headerlink" href="#module-common" title="Enlazar permanentemente con este título">¶</a></h1>
 <dl class="function">
-<dt id="common.convert_to_original_format">
-<code class="sig-prename descclassname">common.</code><code class="sig-name descname">convert_to_original_format</code><span class="sig-paren">(</span><em class="sig-param">movies</em>, <em class="sig-param">credits</em><span class="sig-paren">)</span><a class="headerlink" href="#common.convert_to_original_format" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dt id="common.combine_collections">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">combine_collections</code><span class="sig-paren">(</span><em class="sig-param">movies</em>, <em class="sig-param">credits</em><span class="sig-paren">)</span><a class="headerlink" href="#common.combine_collections" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><p>Aplica una serie de funciones para añadir información al dataset de películas a partir del
 conjunto de datos de créditos</p>
 <dl class="field-list simple">
@@ -112,8 +112,8 @@ dict: Palabra más corta derivada del lexema</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="common.load_tmdb_credits">
-<code class="sig-prename descclassname">common.</code><code class="sig-name descname">load_tmdb_credits</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#common.load_tmdb_credits" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dt id="common.load_credits">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">load_credits</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#common.load_credits" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><p>Función utilizada para cargar el dataset de los créditos. Se cargan como listas los campos que están guardado</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros</dt>
@@ -129,8 +129,8 @@ dict: Palabra más corta derivada del lexema</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="common.load_tmdb_movies">
-<code class="sig-prename descclassname">common.</code><code class="sig-name descname">load_tmdb_movies</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#common.load_tmdb_movies" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dt id="common.load_movies">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">load_movies</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#common.load_movies" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><p>Función utilizada para cargar el dataset de las películas. Se transforma a fecha el campo de fecha de salida
 y se cargan como listas los campos que están guardados como json.</p>
 <dl class="field-list simple">
@@ -164,8 +164,8 @@ y se cargan como listas los campos que están guardados como json.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="common.safe_access">
-<code class="sig-prename descclassname">common.</code><code class="sig-name descname">safe_access</code><span class="sig-paren">(</span><em class="sig-param">container</em>, <em class="sig-param">index_values</em><span class="sig-paren">)</span><a class="headerlink" href="#common.safe_access" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dt id="common.get_element">
+<code class="sig-prename descclassname">common.</code><code class="sig-name descname">get_element</code><span class="sig-paren">(</span><em class="sig-param">container</em>, <em class="sig-param">index_values</em><span class="sig-paren">)</span><a class="headerlink" href="#common.get_element" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><p>Función para acceder de forma segura a valores. En caso de que no se encuentre uno de ellos, se devuelve NaN
 en vez de lanzar un error.</p>
 <dl class="field-list simple">

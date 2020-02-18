@@ -148,7 +148,7 @@ class Recommendator ():
         for index in list_films:
             parametres_films[i] = list(df.iloc[index][['movie_title', 'title_year',
                                             'vote_average', 
-                                            'num_voted_users']])
+                                            'num_voted_users', 'gross']])
             parametres_films[i].append(index)
             max_users = max(max_users, parametres_films[i][4] )
             i += 1
@@ -160,7 +160,8 @@ class Recommendator ():
                                                                 title = x[0], 
                                                                 year = x[1],
                                                                 score = x[2], 
-                                                                votes = x[3]), reverse = True)
+                                                                votes = (x[3]* df.gross.mean())/(x[4]*df.num_voted_users.mean())),
+                                                                reverse = True)
         
         return parametres_films
 

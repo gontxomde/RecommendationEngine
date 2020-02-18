@@ -5,18 +5,18 @@ import math, nltk, warnings
 from nltk.corpus import wordnet
 from fuzzywuzzy import fuzz
 
-from RecommendationEngine.common import load_tmdb_credits
-from RecommendationEngine.common import load_tmdb_movies
-from RecommendationEngine.common import convert_to_original_format
+from RecommendationEngine.common import load_credits
+from RecommendationEngine.common import load_movies
+from RecommendationEngine.common import combine_collections
 from RecommendationEngine.common import keywords_inventory
 from RecommendationEngine.common import get_synonyms
 
 class Preprocessor():
     def __init__(self,movies_path, credits_path):
 
-        credit = load_tmdb_credits(credits_path)
-        movies = load_tmdb_movies(movies_path)
-        self.df = convert_to_original_format(movies, credit)
+        credit = load_credits(credits_path)
+        movies = load_movies(movies_path)
+        self.df = combine_collections(movies, credit)
         self.keywords_inventory = keywords_inventory
         self.get_synonyms = get_synonyms
 
