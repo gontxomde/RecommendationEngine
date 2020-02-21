@@ -8,7 +8,7 @@ from nltk.corpus import wordnet
 from sklearn import linear_model
 from sklearn.neighbors import NearestNeighbors
 from fuzzywuzzy import fuzz
-from RecommendationEngine.common import get_synonyms, keywords_inventory
+from common import get_synonyms, keywords_inventory
 
 
 class Imputer():

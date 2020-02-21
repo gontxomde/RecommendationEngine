@@ -3,3 +3,6 @@ __pycache__
 .vscode
 *.pkl
 RecommendationEngine.egg-info
+ngrok
+telegram_config.ini
+.idea

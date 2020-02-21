@@ -5,11 +5,11 @@ import math, nltk, warnings
 from nltk.corpus import wordnet
 from fuzzywuzzy import fuzz
 
-from RecommendationEngine.common import load_credits
-from RecommendationEngine.common import load_movies
-from RecommendationEngine.common import combine_collections
-from RecommendationEngine.common import keywords_inventory
-from RecommendationEngine.common import get_synonyms
+from common import load_credits
+from common import load_movies
+from common import combine_collections
+from common import keywords_inventory
+from common import get_synonyms
 
 class Preprocessor():
     def __init__(self,movies_path, credits_path):

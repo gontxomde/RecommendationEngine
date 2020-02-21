@@ -9,11 +9,12 @@ from sklearn import linear_model
 from sklearn.neighbors import NearestNeighbors
 from fuzzywuzzy import fuzz
 from wordcloud import WordCloud, STOPWORDS
-from RecommendationEngine.preprocessing import Preprocessor
-from RecommendationEngine.imputation import Imputer
+from preprocessing import Preprocessor
+from imputation import Imputer
 
 class Recommendator ():
-    def __init__(self, conf_file = "conf_partial.yml", df_pickle = None):
+    def __init__(self, conf_file = "config_partial.yml", df_pickle = "dfPickle.pkl"):
+        print(os.getcwd())
         with open(conf_file) as f:
             
             config = yaml.load(f)
@@ -34,9 +35,9 @@ class Recommendator ():
 
             self.df = IM.impute()
             
-            self.df.to_pickle("dfPickle.pkl")
+            self.df.to_pickle("dfPickle.pkl", compression = 'gzip')
         else:
-            self.df = pd.read_pickle(df_pickle)
+            self.df = pd.read_pickle(df_pickle, compression = 'gzip')
         self.gaussian_filter = lambda x,y,sigma: math.exp(-(x-y)**2/(2*sigma**2))
 
 
@@ -133,37 +134,39 @@ class Recommendator ():
         """Extrae algunas variables del dataframe dado como entrada y devuelve la lista
         de N películas. Esta lista se ordena de acuerdo al criterio de la función 
         selection_criteria.
-        
+
         Args:
             df ([type]): DataFrame de películas
             list_films (list): Lista con las n películas recomendadas
             N (int, optional): Number of films recommended. Defaults to 31.
-        
+
         Returns:
             list: Películas recomendadas
         """
-        parametres_films = ['_' for _ in range(N)]
+        film_parameters = ['_' for _ in range(N)]
         i = 0
         max_users = -1
         for index in list_films:
-            parametres_films[i] = list(df.iloc[index][['movie_title', 'title_year',
+            film_parameters[i] = list(df.iloc[index][['movie_title', 'title_year',
                                             'vote_average', 
                                             'num_voted_users', 'gross']])
-            parametres_films[i].append(index)
-            max_users = max(max_users, parametres_films[i][4] )
+            film_parameters[i].append(index)
+            max_users = max(max_users, film_parameters[i][4] )
             i += 1
         # The first element is the selected film itself
-        title_main = parametres_films[0][0]
-        ref_year  = parametres_films[0][1]
-        parametres_films.sort(key = lambda x:self.selection_criteria(title_main, max_users,
+        title_main = film_parameters[0][0]
+        ref_year  = film_parameters[0][1]
+        
+        film_parameters.sort(key = lambda x: self.selection_criteria(title_main,
                                                                 ref_year, 
                                                                 title = x[0], 
                                                                 year = x[1],
-                                                                score = x[2], 
-                                                                votes = (x[3]* df.gross.mean())/(x[4]*df.num_voted_users.mean())),
+                                                                score = x[2],
+                                votes_norm = ((x[3] - df.num_voted_users.mean())/df.num_voted_users.std()),
+                                gross_norm = ((x[4] - df.gross.mean())/df.gross.std())),
                                                                 reverse = True)
         
-        return parametres_films
+        return film_parameters 
 
     def sequel(self, title_1, title_2):   
         """Compara los títulos de dos películas y devuelve si son similares o no
@@ -183,35 +186,34 @@ class Recommendator ():
         else:
             return False
 
-    def selection_criteria(self, title_main, max_users, ref_year, title, year, score, votes):
+    def selection_criteria(self,title_main, ref_year, title, year, score, votes_norm, gross_norm):
         """Calcula la puntuación de una película como recomendación de otra en base 
         a la similaridad de su título, la distancia temporal entre ambos lanzamientos
-        y el número de votos de la película evaluaday la puntuación de la película.
+        y el número de votos de la película evaluada y la puntuación de la película.
         Además, la similitud entre títulos se tiene en cuenta para evitar la 
         recomendación de secuelas. Es decir, si dos películas tienen un nombre muy 
         similar, se desechara como recomendación.
-        
+
         Args:
             title_main (str): Título de la película dada por el usuario
-            max_users (int): Máximo número de votos de las N películas
             ref_year (int): Año de lanzamiento de la película dada por el usuario
             title (str): Título de la película a evaluar
             year (int): Año de lanzamiento de la película a evaluar
             score (float): Votación media de la película a evaluar
-            votes (int): Votos de la película a evaluar
-        
+            ratio (float): Ratio entre votos y presupuesto de la película
+
         Returns:
             float: Mark of the film given
         """
+        ratio = votes_norm/gross_norm
         if pd.notnull(ref_year):
-            factor_1 = self.gaussian_filter(ref_year, year, 20)
+            factor_1 = self.gaussian_filter(ref_year, year, 10)
         else:
             factor_1 = 1        
 
-        sigma = max_users * 1.0
 
-        if pd.notnull(votes):
-            factor_2 = self.gaussian_filter(votes, max_users, sigma)
+        if pd.notnull(ratio):
+            factor_2 = self.gaussian_filter(ratio, 0, 1)
         else:
             factor_2 = 0
             
@@ -326,7 +328,7 @@ class Recommendator ():
             int: Similaridad entre las cadenas de texto
         """
         try:
-            mark = 2/(1/fuzz.token_set_ratio(series_element, string) + 1/fuzz.ratio(series_element, string))
+            mark = 2/(1/fuzz.token_set_ratio(series_element.lower(), string.lower()) + 1/fuzz.ratio(series_element.lower(), string.lower()))
             return mark if mark > 60 else 0
         except:
             return 0
@@ -363,10 +365,9 @@ class Recommendator ():
             selection_titles = self.find_similarities(df, id_entry, del_sequels = True, N = 31, M = 5)
 
             print("Para la película", df.loc[id_entry, "movie_title"], "te recomendamos ver:")
-            for element in selection_titles:
-                print("\t -", element[0])
+            return selection_titles
         else:
-            print("No hemos podido encontrar la película introducida 😢.")
+            return "No hemos podido encontrar la película introducida 😢."
     def user_recommendation(self, string = None):
         """Será la función que se usará para que el usuario obtenga recomendaciones.
         
@@ -379,5 +380,28 @@ class Recommendator ():
 
         if string is None:
             string = input("Introduce el título de la película: ")
+        pelis = self.predict_from_string(string)
 
-        return self.predict_from_string(string)
+        answer = self.parse_response(pelis)
+        print(answer)
+        return 0
+    def symbol(self, order):
+        order += 1
+        if order == 1:
+            return "🥇"
+        elif order == 2:
+            return "🥈"
+        elif order == 3:
+            return "🥉"
+        else:
+            return str(order)
+    def parse_response(self, response):
+        answer = ""
+        if type(response) == list:
+            answer += "Here go our recommendations 🙂:\n"
+            for index, element in enumerate(response):
+                answer += "{} - {} \n".format(self.symbol(index), element[0])
+            return answer
+        else:
+            return response
+            
