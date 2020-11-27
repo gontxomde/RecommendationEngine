@@ -1,18 +1,15 @@
 import pandas as pd
-import numpy as np
+import nltk
 
-import math, nltk, warnings
-from nltk.corpus import wordnet
-from fuzzywuzzy import fuzz
+from RecommendationEngine.common import load_credits
+from RecommendationEngine.common import load_movies
+from RecommendationEngine.common import combine_collections
+from RecommendationEngine.common import keywords_inventory
+from RecommendationEngine.common import get_synonyms
 
-from common import load_credits
-from common import load_movies
-from common import combine_collections
-from common import keywords_inventory
-from common import get_synonyms
 
-class Preprocessor():
-    def __init__(self,movies_path, credits_path):
+class Preprocessor:
+    def __init__(self, movies_path, credits_path):
 
         credit = load_credits(credits_path)
         movies = load_movies(movies_path)
@@ -20,46 +17,44 @@ class Preprocessor():
         self.keywords_inventory = keywords_inventory
         self.get_synonyms = get_synonyms
 
-
-
-        #Variables needed
+        # Variables needed
 
         self.new_col_order = ['movie_title', 'title_year', 'genres', 'plot_keywords',
-         'director_name', 'actor_1_name', 'actor_2_name', 'actor_3_name', 
-         'num_voted_users', 'language', 'country', 'vote_average', 'duration', 
-         'gross']
+                              'director_name', 'actor_1_name', 'actor_2_name', 'actor_3_name',
+                              'num_voted_users', 'language', 'country', 'vote_average', 'duration',
+                              'gross']
 
     def preprocess(self):
         self.set_keywords = set()
         for list_keywords in self.df['plot_keywords'].str.split('|').values:
             if isinstance(list_keywords, float): continue  # Evitar las películas en las que no hay keywords
             self.set_keywords = self.set_keywords.union(list_keywords)
-        #Keywords y número de apariciones
+        # Keywords y número de apariciones
         self.keyword_occurences, _ = self.count_word(self.df, 'plot_keywords', self.set_keywords)
 
         # Se retiran las keywords que son vacías
         self.keyword_occurences = [x for x in self.keyword_occurences if x[0]]
-        _, _, keywords_select = self.keywords_inventory(self.df, column = 'plot_keywords')
-        self.df = self.df_keywords_replacement(self.df, keywords_select, roots = True)
+        _, _, keywords_select = self.keywords_inventory(self.df, column='plot_keywords')
+        self.df = self.df_keywords_replacement(self.df, keywords_select, roots=True)
 
-        self.keyword_occurences.sort(key = lambda x:x[1], reverse = False)
+        self.keyword_occurences.sort(key=lambda x: x[1], reverse=False)
         key_count = dict()
         for s in self.keyword_occurences:
             key_count[s[0]] = s[1]
-        #__________________________________________________________________________
+        # __________________________________________________________________________
         # Creación de un diccionario para reemplazar keywords por sinónimos de mayor frecuencia
         remplacement_word = dict()
         icount = 0
         for _, [word, nb_apparitions] in enumerate(self.keyword_occurences):
             if nb_apparitions > 5: continue  # Sólo las keywords que aparecen menos de 5 veces
             lemma = self.get_synonyms(word)
-            if len(lemma) == 0: continue     #Caso de plurales
-            #_________________________________________________________________
-            word_list = [(s, key_count[s]) for s in lemma 
-                        if self.test_keyword(s, key_count, key_count[word])]
-            word_list.sort(key = lambda x:(x[1],x[0]), reverse = True)    
-            if len(word_list) <= 1: continue       # NO se reemplaza
-            if word == word_list[0][0]: continue    # Reemplazo por sí mismo
+            if len(lemma) == 0: continue  # Caso de plurales
+            # _________________________________________________________________
+            word_list = [(s, key_count[s]) for s in lemma
+                         if self.test_keyword(s, key_count, key_count[word])]
+            word_list.sort(key=lambda x: (x[1], x[0]), reverse=True)
+            if len(word_list) <= 1: continue  # NO se reemplaza
+            if word == word_list[0][0]: continue  # Reemplazo por sí mismo
             icount += 1
         # Keywords that appear both in keys and values:
         icount = 0
@@ -73,11 +68,11 @@ class Preprocessor():
                 remplacement_word[key] = remplacement_word[value]
 
         # Se reemplazan variaciones de una keyword por su keyword principal
-        #----------------------------------------------------------
+        # ----------------------------------------------------------
         self.df = \
-                    self.df_keywords_replacement(self.df, remplacement_word, roots = False)   
+            self.df_keywords_replacement(self.df, remplacement_word, roots=False)
         _, _, keywords_select = \
-                    self.keywords_inventory(self.df, column = 'plot_keywords')
+            self.keywords_inventory(self.df, column='plot_keywords')
 
         self.df = self.df[self.new_col_order]
 
@@ -100,18 +95,18 @@ class Preprocessor():
         for s in lista: keyword_count[s] = 0
         for lista_keywords in df[ref_col].str.split('|'):
             if type(lista_keywords) == float and pd.isnull(lista_keywords): continue
-            #for s in lista:
+            # for s in lista:
             for s in [s for s in lista_keywords if s in lista]:
                 if pd.notnull(s): keyword_count[s] += 1
-        #______________________________________________________________________
+        # ______________________________________________________________________
         # convert the dictionary in a list to sort the keywords by frequency
         keyword_occurences = []
-        for k,v in keyword_count.items():
-            keyword_occurences.append([k,v])
-        keyword_occurences.sort(key = lambda x:x[1], reverse = True)
+        for k, v in keyword_count.items():
+            keyword_occurences.append([k, v])
+        keyword_occurences.sort(key=lambda x: x[1], reverse=True)
         return keyword_occurences, keyword_count
 
-    def df_keywords_replacement(self, df, replacement_dict, roots = False, column = 'plot_keywords'):
+    def df_keywords_replacement(self, df, replacement_dict, roots=False, column='plot_keywords'):
         """Reemplaza las palabras clave de una película por las formas básicas de las mismas.
         
         Args:
@@ -126,21 +121,21 @@ class Preprocessor():
         """
 
         PS = nltk.stem.PorterStemmer()
-        df_new = df.copy(deep = True)
+        df_new = df.copy(deep=True)
         for index, row in df_new.iterrows():
             chain = row[column]
             if pd.isnull(chain): continue
             new_list = []
-            for s in chain.split('|'): 
+            for s in chain.split('|'):
                 key = PS.stem(s) if roots else s
                 if key in replacement_dict.keys():
                     new_list.append(replacement_dict[key])
                 else:
-                    new_list.append(s)       
+                    new_list.append(s)
             df_new.at[index, column] = '|'.join(new_list)
         return df_new
 
-    def test_keyword(self,word, key_count, threshold):
+    def test_keyword(self, word, key_count, threshold):
         """Devuelve si una palabra aparece un número mayor de veces que el umbral señalado
         
         Args:
@@ -151,7 +146,7 @@ class Preprocessor():
         Returns:
             bool: True si aparece un número mayor de veces
         """
-        return (False , True)[key_count.get(word, 0) >= threshold]
+        return (False, True)[key_count.get(word, 0) >= threshold]
 
     def replacement_df_low_frequency_keywords(self, df, keyword_occurences):
         """Modifica las entradas del dataframe, quitando las keywords que aparecen menos 
@@ -164,15 +159,15 @@ class Preprocessor():
         Returns:
             pd.Dataframe: DataFrame con las nuevas keywords
         """
-        df_new = df.copy(deep = True)
+        df_new = df.copy(deep=True)
         key_count = dict()
-        for s in keyword_occurences: 
-            key_count[s[0]] = s[1]    
+        for s in keyword_occurences:
+            key_count[s[0]] = s[1]
         for index, row in df_new.iterrows():
             chain = row['plot_keywords']
             if pd.isnull(chain): continue
             new_list = []
-            for s in chain.split('|'): 
+            for s in chain.split('|'):
                 if key_count.get(s, 4) > 3: new_list.append(s)
             df_new.at[index, 'plot_keywords'] = '|'.join(new_list)
-        return df_new  
+        return df_new

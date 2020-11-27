@@ -1,15 +1,13 @@
 import requests
 import time
 import math
-import os, json
-
+import os
 from flask import Flask, request, json
-from pyngrok import ngrok
 from datetime import datetime
 from configparser import ConfigParser
-from datetime import timedelta
-from recommendation import Recommendator
-from utils import get_ngrok_url
+
+from RecommendationEngine.recommendation import Recommendator
+from RecommendationEngine.utils import get_ngrok_url
 
 # Lectura del fichero de configuración (Contiene el token)
 config = ConfigParser()
